@@ -82,7 +82,7 @@ for i in range(4):
     x_i = np.linalg.inv(A)@b_i
     X[:,i] = x_i
     residuen = A@x_i-b_i
-    max_residuen.append(np.max(np.abs(residuen)))
+    max_residuen.append(float(np.max(np.abs(residuen))))
 print('i) \nX = \n',X,'\nDas Ergebnis der Maxinumsnorm der Resdiuen der Spalten : ',max_residuen,'\n')
 
 X2 = np.linalg.solve(A,B)
