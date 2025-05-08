@@ -61,12 +61,15 @@ def petras_optimizer(f, x0=0, d0=1, kmax=50, plot=False):
         print(f"  x0 = {xk}, f(x°) = {y0:}")
         print(f"  x+ = {xp}, f(x+) = {yp:}")
 
+        log["x_list"].append(xk)
+        log["val_list"].append(y0)
+
         if ym<y0 and yp<y0:
+            dk = 0.5 * dk
             if ym<yp:
                 xk=xm
             else:
                 xk=xp
-            dk=0.5*dk
         elif ym<y0 and yp>=y0:
             xk=xm
             dk=2*dk
@@ -74,9 +77,17 @@ def petras_optimizer(f, x0=0, d0=1, kmax=50, plot=False):
             xk=xp
             dk=2*dk
         elif ym>=y0 and yp>=y0:
-            print("ERRRROR")
-            xk=x0
+            xk=xk
             dk=0.5*dk
+
+        if k<20:
+            plot_xm.set_data([xm], [ym])
+            plot_xo.set_data([xk], [y0])
+            plot_xp.set_data([xp], [yp])
+            plt.draw()
+            plt.pause(0.25)
+
+
     # END SOLUTION
 
     log['xpetra'] = xk
