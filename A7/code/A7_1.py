@@ -46,7 +46,6 @@ def preconditioned_cg(A, b, c, P, x0, tol=1e-10, kmax=100, xstar=None, plot=Fals
     # Praekonditionierung
     A_quer = P.T @ A @ P
     # Bei der P3 wird hier b_quer mit der Dimension (1,50) berechnet. (WARUM!?)
-    # Dies konnte auch durch reshape(50,) nicht behoben werden
     # Infolge dessen finden sich im Folgenden wilde Verwendungen von '.T' ,
     # welche im Durchlauf mit P1 und P2 aufgrund der Dimension (50,) keine Auswirkung haben,
     # aber bei der P3 zur (hoffentlich richtigen) Loesung fuehren.
