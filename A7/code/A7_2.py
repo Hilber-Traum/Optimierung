@@ -31,18 +31,20 @@ def newton(f, x0, tol=1e-10, kmax=100, xstar=None):
 
     # TODO: Aufgabenteil 1. Newtonverfahren implementieren.
     # BEGIN SOLUTION
+    #Startwerte abspeichern
     log['x0'] = x0
     log['xstar'] = xstar
 
     
     xk = x0
-    #Berechne den ersten Gradienten, Wert und Hessematrix und Norm von grad
+    #Berechne den ersten Gradienten, Wert und Hessematrix und Norm von grad und speichere sie
     val, grad, hess = f(xk)
     normgradf = np.linalg.norm(grad)
     log['norm_grad_list'].append(normgradf)
     log['val_list'].append(val)
     log['x_list'].append(xk)
 
+    #Berechnungs-loop nach Skript
     k = 0
     while(k < kmax and normgradf > tol):
         #Berechne p^k
@@ -90,6 +92,7 @@ def objective_fun(x1, x2):
 
     # BEGIN SOLUTION
     #Falls m = 1
+    #Berechnet die Funktion, ihren Gradienten und Hessematrix. Für m>1 gibt es einen extra-Fall (sorry ist etwas messy, funktioniert aber hoffentlich)
     if(not isinstance(x1, (list, tuple, np.ndarray, ))):
         val = x1**4 + x1*x2 + (1+x2)**2
         grad = np.array([4*x1**3 + x2, x1 + 2+2*x2])
@@ -121,7 +124,6 @@ if __name__ == '__main__':
             print(f'Ihre Rechnung: {v_which} = \n{v}')
             print(f'     Erwartet: {v_which} = \n{v_correct}')
             break
-    print("1D Check passed")
     val, grad, hess = objective_fun(np.array([2, 3]), np.array([5, 4]))
     val_correct, grad_correct, hess_correct = np.array([62, 118]), \
         np.array([[37, 14], [112, 13]]), np.array([[[48, 1], [1, 2]], [[108, 1], [1, 2]]])
@@ -140,11 +142,13 @@ if __name__ == '__main__':
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
 
 
+    #Erstelle den Funktionsplot (surfplot) nach Aufgabenstellung
     x = np.linspace(-3.25, 3.25, 651)
     X, Y = np.meshgrid(x, x)
     Z = X**4 + X*Y + (1+Y)**2
     surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm)
 
+    #Plot beschriften
     plt.title("f(x,y) = x^4 + x*y + (1+y)^2")
     plt.xlabel('x-Axis')
     plt.ylabel('y-Axis')
@@ -168,21 +172,26 @@ if __name__ == '__main__':
     startval_1 = np.array([3,0])
     startval_2 = np.array([-2,-2])
 
+    #Zweimaliges Testen des Newton-Verfahrens mit anschließender Ausgabe des gefundenen Minimieres und Anzahl Schritte
+    #1. Startwert
     log = newton(f, startval_1, tol, kmax, xstar)
     crit_point = log['xnv']
     iteration_count = log['knv']
     print(f'Nach Newton Verfahren ist {crit_point} ein kritischer Punkt')
     print(f'Im Newton Verfahren wurden {iteration_count} Schritte gemacht')
 
+    #Ergebnis plotten
     fig = plot_iteration_process_2d(log, 'Newton, Startpunkt 1')
     plt.show()
 
+    #2. Startwert
     log = newton(f, startval_2, tol, kmax, xstar)
     crit_point = log['xnv']
     iteration_count = log['knv']
     print(f'Nach Newton Verfahren ist {crit_point} ein kritischer Punkt')
     print(f'Im Newton Verfahren wurden {iteration_count} Schritte gemacht')
 
+    #Ergebnis plotten
     fig = plot_iteration_process_2d(log, 'Newton, Startpunkt 2')
     plt.show()
 
@@ -209,6 +218,7 @@ if __name__ == '__main__':
     startingpoints = []
     endpoints = []
 
+    #Berechne den Minimierer mit 300 verschiedenen Startwerten. Speichere Startwerte und Minimierer ab
     for l in range(0,300):
         startpoint = np.array([3*np.cos(2*np.pi*l/300), 3*np.sin(2*np.pi*l/300)])
         log = newton(f, startpoint, tol1, kmax)
@@ -221,6 +231,7 @@ if __name__ == '__main__':
     
     sum_mild_tol = np.sum(iterations)
 
+    #Plotte die Startwerte und Minimierer als Scatterplot
     X, Y = np.meshgrid(startingpoints, endpoints)
     Z = X**4 + X*Y + (1+Y)**2
     surf = ax0.scatter(X, Y, Z)
@@ -250,6 +261,8 @@ if __name__ == '__main__':
     iterations = []
     startingpoints = []
     endpoints = []
+
+    #Berechne den Minimierer mit 300 verschiedenen Startwerten. Speichere Startwerte und Minimierer ab
     for l in range(0,300):
         startpoint = np.array([3*np.cos(2*np.pi*l/300), 3*np.sin(2*np.pi*l/300)])
         log = newton(f, startpoint, tol2, kmax)
@@ -260,6 +273,7 @@ if __name__ == '__main__':
         startingpoints.append([3*np.cos(2*np.pi*l/300), 3*np.sin(2*np.pi*l/300)])
         endpoints.append(crit_point)
     
+    #Plotte die Startwerte und Minimierer als Scatterplot
     X, Y = np.meshgrid(startingpoints, endpoints)
     Z = X**4 + X*Y + (1+Y)**2
     surf = ax0.scatter(X, Y, Z)
