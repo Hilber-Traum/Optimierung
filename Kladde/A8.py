@@ -5,6 +5,7 @@ from utils import *
 # weitere Module importieren
 # BEGIN SOLUTION
 from matplotlib import cm
+import time
 # END SOLUTION
 
 def armijo(f, p, x, rho, c1, alpha0=1):
@@ -62,6 +63,7 @@ def gill_murray_wright(xk, xkplus1, valk, valkplus1, gradk, k, eps, tau, kmax):
     # TODO:  Aufgabenteil 1.ii: Gill-Murray-Wright-Abbruchkriterien ueberpruefen.
     # BEGIN SOLUTION
     test = False #Initialisiere Boolean
+
     #Pruefe erste Bedingung
     eins_a_1 = valk - valkplus1
     eins_a_2 = tau * (1 + abs(valk))
@@ -242,12 +244,34 @@ if __name__ == '__main__':
                 print('----')
                 # TODO: Aufgabenteil 3: which_method Verfahren testen und Ergebnisse in Konsole ausgeben
                 # BEGIN SOLUTION
-                ...
+                start_time = time.time()
+                if which_method == 'Gradientenabstieg':
+                    log = gradient_descent_erweitert(f,x0,rho,c1,eps,tau,kmax,xstar)
+                    anzahl_iter = log['kgd']
+                    loesung = log['xgd']
+                else:
+                    log = newton_erweitert(f,x0,rho,c1,eps,tau,kmax,xstar)
+                    anzahl_iter = log['knv']
+                    loesung = log['xnv']
+
+                gesamt_time = time.time() - start_time
+                zeit_iter = gesamt_time/anzahl_iter
+
+                print(f"Verfahren: {which_method}")
+                print(f"x0: {x0}")
+                print(f"Tau: {tau}")
+                print(f"Berechnete Lösung: {loesung}")
+                print(f"Anzahl Iterationen: {anzahl_iter}")
+                print(f"Gesamte Zeit: {gesamt_time}")
+                print(f"Durchschnittliche Zeit pro Iteration: {zeit_iter}")
+                print()
                 # END SOLUTION
 
                 # TODO:  Aufgabenteil 4: Iterationsverlauf plotten
                 # BEGIN SOLUTION
-                ...
+                title = f"Plot für das {which_method}-Verfahren mit Startwert ${x0}$ und Tau = ${tau}$"
+                figure = plot_iteration_rosenbrock(log, title)
+                plt.show()
                 # END SOLUTION
 
     # TODO:  Aufgabenteil 4: Diskussion
