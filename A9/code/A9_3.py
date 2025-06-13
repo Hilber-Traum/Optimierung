@@ -177,13 +177,15 @@ if __name__ == '__main__':
     test_w0 = {
         0:    np.array([0, 0, 0]),  # weder Rotation noch Translation
         1:  np.array([0.4, 0, 0]),  # Rotation
-        2: np.array([-0.4, 0, 0]),  # Rotation
+        2: np.array([-0.4, -1, -1]),  # Rotation
         3:    np.array([0, 5, 0]),  # Translation x-Richtung
         4:    np.array([0, 0, 2]),  # Translation y-Richtung
+        5: np.array([-0.51532779, 0.00690073,  2.00917066])
     }
 
     # Hier testen:
-    _, _ = rr.objective_fun_ir(test_w0[2], plot=True, title='Beispielaufruf der Zielfunktion')
+    #for i in range(6):
+    #     _, _ = rr.objective_fun_ir(test_w0[i], plot=True, title='Beispielaufruf der Zielfunktion')
 
     # TODO: Aufgabenteil 1. Für Verwendung des Quasi-Newton-Verfahrens geeignete Funktion f erstellen.
     #   Hinweis: Der "*"-Operator zur Auflösung von Tupeln könnte hilfreich sein.
@@ -198,19 +200,25 @@ if __name__ == '__main__':
     B0 = np.eye(3)
     rho = 1/2
     c1 = 1e-3
-    tau = 1e-2
+    tau = 1e-5
     eps = 1e-10
     kmax = 100
     w0 = np.array([0, 0, 0])
-    w0_self = np.array([-0.3, -1, 2])
-    log1 = quasi_newton(f = f, x0 = w0_self, B0 = B0, rho = rho, c1 = c1, eps = eps, tau = tau, kmax = kmax, display = False)
-    rr.objective_fun_ir(log1['xqn'], plot=True, title='Nach Optimierung mit w0 = [-0.3, 1, 2]')
-    log2 = quasi_newton(f = f, x0 = w0, B0 = B0, rho = rho, c1 = c1, eps = eps, tau = tau, kmax = kmax, display = False)
-    rr.objective_fun_ir(log2['xqn'], plot=True, title='Nach Optimierung mit w0 = [0, 0, 0]')
+    w0_self = np.array([-0.4, 0, 2])
+
+    rr.objective_fun_ir(w0_self, plot=True, title='Vor der Optimierung mit w0 = [-0.3, 1, 2]')
+    log1 = quasi_newton(f = f, x0 = w0_self, B0 = B0, rho = rho, c1 = c1, eps = eps, tau = tau, kmax = kmax, plot = False, display = False)
+    rr.objective_fun_ir(log1['xqn'], plot=True, title='Nach der Optimierung mit w0 = [-0.3, 1, 2]')
+
+    rr.objective_fun_ir(w0, plot=True, title='Vor der Optimierung mit w0 = [0, 0, 0]')
+    log2 = quasi_newton(f = f, x0 = w0, B0 = B0, rho = rho, c1 = c1, eps = eps, tau = tau, kmax = kmax, plot = False, display = False)
+    rr.objective_fun_ir(log2['xqn'], plot=True, title='Nach der Optimierung mit w0 = [0, 0, 0]')
 
     # END SOLUTION
 
     # TODO: Aufagenteil 3. Diskussion.
     # BEGIN SOLUTION
-    ...
+    print("Verändert man das Tau und das Epsilon so stellt man fest, dass z.T bessere Ergebnisse mit größeren \n"
+          "Tau und Epsiolon erreicht werden.\n"
+          "Deutlich wichtiger für das Finden eines guten Minimierers ist der Startwert.")
     # END SOLUTION

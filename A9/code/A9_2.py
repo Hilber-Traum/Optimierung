@@ -50,17 +50,14 @@ def quasi_newton(f, x0, B0, rho=0.5, c1=1e-3, eps=1e-10, tau=1e-10, kmax=100, pl
         log['val_list'].append(valkplus1)
         log['norm_grad_list'].append(np.linalg.norm(gradfxkplus1))
 
+    if (display):
+        print(f'Ausgabe der Werte in der {k}-ten Iteration:')
+        print(f'alpha^k ist: {alphak}')
+        print(f'x^k ist: {xk}')
+        print(f'f(x^k) ist: {valkplus1}')
 
     #a) Überprüfe Abbruchkriterien
     while (not gill_murray_wright(xk, xkplus1, valk, valkplus1, gradfxkplus1, k, eps, tau, kmax)):
-        print(f'Abbruchbedingung in Iteration {k}:',
-              gill_murray_wright(xk, xkplus1, valk, valkplus1, gradfxkplus1, k, eps, tau, kmax))
-         # printe alle geforderten Informationen
-        if (display):
-            print(f'Ausgabe der Werte in der {k}-ten Iteration:')
-            print(f'alpha^k ist: {alphak}')
-            print(f'x^k ist: {xk}')
-            print(f'f(x^k) ist: {valkplus1}')
 
         #e) Berechne s^k, y^k und überprüfe, ob deren Produkt >0 ist
         sk = xkplus1 - xk
@@ -86,15 +83,18 @@ def quasi_newton(f, x0, B0, rho=0.5, c1=1e-3, eps=1e-10, tau=1e-10, kmax=100, pl
         # d) Bestimme neues x^k
         xk = xkplus1
         xkplus1 = xkplus1 + alphak * pk
-        print(f'xk ist: {xk} und xk+1 ist: {xkplus1}')
-        print(f'alphak ist: {alphak} und pk ist: {pk}')
 
         # Update Werte und Gradienten und berechne Wert und Gradienten an x^(k+1)
         valk = valkplus1
         gradfxk = gradfxkplus1
         valkplus1, gradfxkplus1, _ = f(xkplus1)
 
-        # gebe alle Einträge aus, sofern display=1 ist
+        # gebe alle Einträge aus, sofern display=True ist
+        if (display):
+            print(f'Ausgabe der Werte in der {k}-ten Iteration:')
+            print(f'alpha^k ist: {alphak}')
+            print(f'x^k ist: {xk}')
+            print(f'f(x^k) ist: {valk}')
 
         # speichere alle Einträge im log
         if plot:
@@ -103,7 +103,7 @@ def quasi_newton(f, x0, B0, rho=0.5, c1=1e-3, eps=1e-10, tau=1e-10, kmax=100, pl
             log['norm_grad_list'].append(np.linalg.norm(gradfxkplus1))
 
     log['kqn'] = k
-    log['xqn'] = xk
+    log['xqn'] = xkplus1
     # END SOLUTION
     return log
 
@@ -114,20 +114,16 @@ if __name__ == '__main__':
     f = lambda x: rosenbrock(*x.T)
 
     #Für tau=1e-10
-    print('----------------Testen Verlauf für tau = 1e-10 und x0 = (-1, 1)----------------------')
-    result_tau_big = quasi_newton(f, np.array([-1,1]), np.identity(2), rho = 0.5, c1 = 1e-3, eps = 1e-10, kmax = 100)
-    iterationcount = result_tau_big['kqn']
+    print('----------------Testen Verlauf für tau = 1e-10 und x0 = (-1.2, 1)----------------------')
+    result_tau_big = quasi_newton(f, np.array([-1.2,1]), np.identity(2), rho = 0.5, c1 = 1e-3, eps = 1e-10, kmax = 100, display = False)
     minimizer = result_tau_big['xqn']
-    print(iterationcount)
     print(f'Der gefundene Minimierer ist: {minimizer}')
 
 
     #Für tau=1e-2
-    print('----------------Testen Verlauf für tau = 1e-2 und x0 = (-1, 1)----------------------')
-    result_tau_small = quasi_newton(f, np.array([-1,1]), np.eye(2), rho = 0.5, c1 = 1e-3, eps = 1e-2, tau = 1e-2, kmax = 100)
-    iterationcount = result_tau_small['kqn']
+    print('----------------Testen Verlauf für tau = 1e-2 und x0 = (-1.2, 1)----------------------')
+    result_tau_small = quasi_newton(f, np.array([-1.2,1]), np.eye(2), rho = 0.5, c1 = 1e-3, eps = 1e-2, tau = 1e-2, kmax = 100, display = False)
     minimizer = result_tau_small['xqn']
-    print(iterationcount)
     print(f'Der gefundene Minimierer ist: {minimizer}\n')
 
     #Plotte die Ergebnisse
@@ -144,19 +140,15 @@ if __name__ == '__main__':
 
     #Für tau=1e-10
     print('----------------Testen Verlauf für tau = 1e-10 und x0 = (0, -0.75)----------------------')
-    result_tau_big1 = quasi_newton(f, np.array([0, -0.75]), np.eye(2), rho = 0.5, c1 = 1e-3, eps = 1e-10, kmax = 100)
-    iterationcount = result_tau_big1['kqn']
+    result_tau_big1 = quasi_newton(f, np.array([0, -0.75]), np.eye(2), rho = 0.5, c1 = 1e-3, eps = 1e-10, kmax = 100, display = False)
     minimizer = result_tau_big1['xqn']
-    print(iterationcount)
     print(f'Der gefundene Minimierer ist: {minimizer}')
 
 
     #Für tau=1e-3
     print('----------------Testen Verlauf für tau = 1e-2 und x0 = (0, -0.75)----------------------')
-    result_tau_small1 = quasi_newton(f, np.array([0, -0.75]), np.eye(2), rho = 0.5, c1 = 1e-3, eps = 1e-2, tau = 1e-2, kmax = 100)
-    iterationcount = result_tau_small1['kqn']
+    result_tau_small1 = quasi_newton(f, np.array([0, -0.75]), np.eye(2), rho = 0.5, c1 = 1e-3, eps = 1e-2, tau = 1e-2, kmax = 100, display = False)
     minimizer = result_tau_small1['xqn']
-    print(iterationcount)
     print(f'Der gefundene Minimierer ist: {minimizer}\n')
 
     #Plotte die Ergebnisse
@@ -170,4 +162,7 @@ if __name__ == '__main__':
 
     # TODO: Aufgabenteil 3. Diskussion
     # BEGIN SOLUTION
+    print("Bei beiden Startwerten hat die Größe von Tau keinen Einfluss auf die Anzahl der Iterationen,\n"
+          "da im ersten Fall der Minimierer jeweils nach 8 Iterationen gefunden wird und im zweiten Fall beide Male\n"
+          " die 100 Iteration durchlaufen werden. \n")
     # END SOLUTION
