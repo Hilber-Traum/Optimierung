@@ -4,7 +4,7 @@ from scipy.sparse import spdiags, vstack, kron
 from scipy.sparse.linalg import spsolve
 import matplotlib.pyplot as plt
 
-from A4.code.utils import plot_iteration_process
+#from A4.code.utils import plot_iteration_process
 from A9_2 import quasi_newton
 
 # weitere Module importieren
