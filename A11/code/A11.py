@@ -46,16 +46,16 @@ def newton_sqp(f, g, x0, lmb0, tol=1e-7, kmax=100, plot=True):
     m = len(g)
 
     for k in range(kmax):
-        #L(x,lmb) = f(x) + lmb.T g(x)
-
         # Bestimmen die ABleitungen von f
         _, grad_fxk, hess_fxk = f(xk)
 
         #Beginnen mit der Berechnung von Hk
         Hk = hess_fxk
         #Bestimmen die Ableitungen von g
+        # Konstruieren zunächst die Vektoren und Matrizen zum Speichern aufgrund der mehreren Nebenbedingungen
         jacobi_g = np.zeros((m, n))
         val_gxk = np.zeros(m)
+        # Bestimmen fuer jede Nebenbedingung die Ableitungen
         for i in range(m):
             val_gixk, grad_gixk, hess_gixk = g[i](xk)
             val_gxk[i] = val_gixk
@@ -92,11 +92,11 @@ def newton_sqp(f, g, x0, lmb0, tol=1e-7, kmax=100, plot=True):
         # Update
         xk = xk + delta_xk
         lmbk = lmbk + delta_lmbk
-    # END SOLUTION
     else:
         log['xsqp'] = xk
         log['lmbsqp'] = lmbk
-        log['ksqp'] = 100
+        log['ksqp'] = kmax
+    # END SOLUTION
     return log
 
 
@@ -104,7 +104,8 @@ def main():
     # TODO: Aufgabenteil 2i. Funktionen für Problem 1 konstruieren
     #  Hinweis: Sowohl f als auch g1 kann als quadratische Funktionen dargestellt werden (Implementierung in utils.py)
     # BEGIN SOLUTION
-    A1 = np.array([[-1, 0], [0, -1]])
+    #Bestimmen Matrixen und Vektoren für die quadratischen Funktionen
+    A1 = 2 * np.array([[-1, 0], [0, -1]]) # *2 damit das 1/2 ausgeglichen wird
     b1 = np.array([8, 0])
     c1 = 9
     A2 = - A1
@@ -124,9 +125,9 @@ def main():
     tol = 1e-10
     kmax = 100
     x0 = [np.array([1.5, 5.0]), np.array([-0.1, 0.0])]
-    xstar = np.array([np.sqrt(2), 0.0]) # Was ist hier richtig?!
+    xstar = np.array([-1.0, 0.0]) # Loesung vom letzten Blatt?
     for x in x0:
-        # kopiert von unten
+        # kopiert/verändert von unten
         log_sqp = newton_sqp(f=f_problem1, g=g1_problem1, x0=x, lmb0=lmb0, tol=tol, kmax=kmax)
         print(f'----------------------------------------- \n'
               f' SQP auf Problem 1 (Startwert: x0 = {x})\n'
@@ -137,23 +138,20 @@ def main():
         """)
         fig = plot(f=f_problem1, g=g1_problem1, log=log_sqp,
                    xstar = xstar,
-                   title='Optimierungsverlauf bei Problem 1')
+                   title='Optimierungsverlauf bei Problem 1, x0 = ' + str(x))
         fig.show()
     # END SOLUTION
 
     # Diskussion
     # BEGIN SOLUTION
-    print("Der eine Punkt liegt im 'Tal' und der andere 'außerhalb' der Nebenbedingung. Beim Start im 'Tal'\n"
-          "wird zunächst ein Schritt ganz weit raus gemacht, da g1(x) dort nicht erfüllt ist, sondern sogar beinahe\n"
-          "minimiert wird. Danach wird sich sukzessive dem Rand genähert, bis die Nebenbedingung erfüllt ist.\n"
-          "Beim anderen Punkt wird zunächst ebenfalls ein Schritt weg von der Nebenbedingung gemacht, um sich dann\n"
-          "auf an der Achse entlang zu bewegen, bis die Nebenbedingung erfüllt ist.\n")
+    print("Abhängig von der Wahl des x0 werden hier die beiden kritischen Punkte gefunden, dabei führt der erste\n"
+          "Startwert jedoch zum Maximierer und lediglich der zweite zum Minimierer unter der Nebenbedingung.\n")
     # END SOLUTION
 
     # TODO: Aufgabenteil 2ii. Implementierung auf Problem 2 testen und Ergebnis ausgeben
     #  Hinweis: Sowohl f als auch g1 kann als quadratische Funktionen dargestellt werden (Implementierung in utils.py)
     # BEGIN SOLUTION
-    A3 = np.array([[100, 0, 0], [0 , 25, 0], [0, 0, 100/9]])
+    A3 = 2 * np.array([[100, 0, 0], [0 , 25, 0], [0, 0, 100/9]]) # *2 damit das 1/2 ausgeglichen wird
     A4 = np.zeros((3,3))
     b3 = np.array([-1300, -735, -440])
     b4 = np.array([1, 1, -1])
@@ -164,6 +162,7 @@ def main():
     g1_problem2 = lambda x: quadratic_function(x, A4, b4, c4)
     x0 = [np.array([0.0, 0.0, 0.0]),np.array([6.5, 14.7, 19.8])]
     for x in x0:
+        # kopiert/verändert von unten
         log_sqp = newton_sqp(f=f_problem2, g=g1_problem2, x0=x, lmb0=lmb0, tol=tol, kmax=kmax, plot=False)
         print(f'----------------------------------------- \n'
               f' SQP auf Problem 2 (Startwert: x0 = {x})\n'
@@ -176,7 +175,10 @@ def main():
 
     # Diskussion
     # BEGIN SOLUTION
-    ...
+    print("In diesem Fall führen beide Startwerte zu der gleichen Lösung, welche auch die berechnete Lösung aus\n"
+          "Aufgabe 1 ist. Interessant dabei ist, dass trotz der deutlich unterschiedlichen Distanz zwischen den\n"
+          "Startwerten und dem Minimierer wird in beiden Fällen der gleiche Lagrange-Multiplikator und\n"
+          "auch die gleiche Anzahl an Iterationen benötigt.\n")
     # END SOLUTION
 
 
